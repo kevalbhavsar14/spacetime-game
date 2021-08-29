@@ -1,3 +1,4 @@
+from emitter import Emitter
 import pygame as pg
 import math, random
 from gameInit import *
@@ -13,12 +14,20 @@ class Ship:
         self.pos = pg.Vector2(x, y)
         self.vel = pg.Vector2(vel)
         self.sprite = pg.image.load('sprites/ship.png').convert_alpha()
+        self.particles = Emitter((255, 100, 0), 10, 1)
     
-    def update(self):
+    def update(self, m = 1):
         maxVel = 15
         if self.vel.length() > maxVel: self.vel.scale_to_length(maxVel)
-        self.pos += self.vel
+        vel = pg.Vector2(self.vel)
+        if self.vel.length() * m > 0: vel.scale_to_length(self.vel.length() * m)
+        self.pos += vel
         self.angle = (self.vel.angle_to(Vector2(1, 0))) * math.pi / 180
+        self.updateParticles(m)
+        
+    def updateParticles(self, m = 1):
+        self.particles(self.pos)
+        self.particles.update(m)
     
     def persue(self, target):
         desiredVel = target.pos - self.pos

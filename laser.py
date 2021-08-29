@@ -7,9 +7,9 @@ class Laser:
         self.p1 = pg.Vector2(p1)
         self.p2 = pg.Vector2(p2)
 
-    def update(self):
-        self.p1.x -= 5
-        self.p2.x -= 5
+    def update(self, m = 1):
+        self.p1.x -= 5 * m
+        self.p2.x -= 5 * m
 
     def draw(self):
         pg.draw.line(screen, (255, 0, 0), self.p1, self.p2, 2)
