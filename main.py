@@ -7,17 +7,19 @@ from emitter import Emitter
 
 pg.display.set_caption('Spacetime')
 
-player = PlayerShip(100, height/2)
+player = PlayerShip(200, height/2)
 enemies = []
 lasers = []
 
-timeParticles = Emitter((0, 255, 0), 10, 5, 10)
+timeParticles = Emitter((0, 255, 0), 10, 5, 50)
+explosion = Emitter((255, 0, 0), 10, 5, 20)
 jumpTime = 1
 movementMul = 1
+groundX = 0
 
 def main_loop():
-    global jumpTime, movementMul
-    pg.display.set_caption(f'Spacetime Jump - FPS : {1000//(dt+0.01)}')
+    global jumpTime, movementMul, groundX
+    pg.display.set_caption(f'Spacetime Jump - FPS : {1000/(dt+0.01)}')
     screen.blit(background, (0, 0))
     
     player.fly()
@@ -28,7 +30,8 @@ def main_loop():
         enemy.persue(player)
         enemy.update(movementMul)
         enemy.draw()
-        if enemy.pos.y > height or enemy.pos.x < 0:
+        if enemy.pos.y > 440 or enemy.pos.x < 0:
+            explosion(enemy.pos)
             enemies.remove(enemy)
     
     for laser in lasers:
@@ -45,16 +48,24 @@ def main_loop():
         pg.draw.rect(screen, (255, 255, 255), pg.Rect(x, y, 40, 10))
         pg.draw.rect(screen, (0, 255, 0), pg.Rect(x, y, jumpTime * 2, 10))
     movementMul = 1 / jumpTime
-    timeParticles.update() 
+    
+    timeParticles.update()
+    explosion.update()
+
+    groundX = (groundX - 5 * movementMul) % width
+    screen.blit(ground, (groundX, 0))
+    screen.blit(ground, (groundX - width, 0))
 
 def time_jump(frames):
+    global groundX
     for i in range(frames):
         # player.update()
         for enemy in enemies:
-            enemy.persue(player)
+            # enemy.persue(player) 
             enemy.update()
         for laser in lasers:
             laser.update()
+        groundX = (groundX - 5 * movementMul) % width
 
 def handle_events():
     global jumpTime
@@ -85,4 +96,4 @@ while True:
     handle_events()
     main_loop()
     pg.display.update()
-    pg.time.Clock().tick(70) 
+    pg.time.Clock().tick(80)

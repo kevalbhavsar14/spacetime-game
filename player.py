@@ -20,6 +20,6 @@ class PlayerShip(Ship):
         self.flyParticles.update(m)
     
     def fly(self):
-        if pg.key.get_pressed()[pg.K_SPACE]:
+        if pg.key.get_pressed()[pg.K_SPACE] and self.pos.y > 50:
             self.vel.y = -5
             self.flyParticles(self.pos)

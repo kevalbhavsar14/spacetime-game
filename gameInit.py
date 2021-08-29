@@ -12,3 +12,4 @@ spawnLaser = pg.USEREVENT + 2
 pg.time.set_timer(spawnLaser, 3000)
 
 background = pg.image.load('sprites/background.png').convert()
+ground = pg.image.load('sprites/ground.png').convert_alpha()
