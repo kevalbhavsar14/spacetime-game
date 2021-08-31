@@ -1,9 +1,8 @@
-from emitter import Emitter
 import pygame as pg
 import math, random
 from gameInit import *
-
-from pygame.math import Vector2
+from laser import Laser
+from emitter import Emitter
 
 class Ship:
     def __init__(self, x, y, vel):
@@ -22,7 +21,7 @@ class Ship:
         vel = pg.Vector2(self.vel)
         if self.vel.length() * m > 0: vel.scale_to_length(self.vel.length() * m)
         self.pos += vel
-        self.angle = (self.vel.angle_to(Vector2(1, 0))) * math.pi / 180
+        self.angle = (self.vel.angle_to(pg.Vector2(1, 0))) * math.pi / 180
         self.updateParticles(m)
         
     def updateParticles(self, m = 1):
@@ -32,6 +31,23 @@ class Ship:
     def persue(self, target):
         desiredVel = target.pos - self.pos
         self.vel += desiredVel.normalize()
+    
+    def collideShip(self, ship):
+        p1 = (self.pos.x, self.pos.y)
+        p2 = (ship.pos.x, ship.pos.y)
+        d = math.dist(p1, p2)
+        return d < self.collisionRadius + ship.collisionRadius
+
+    def collideLaser(self, laser: Laser):
+        pos = (self.pos.x, self.pos.y)
+        p1 = (laser.p1.x, laser.p1.y)
+        p2 = (laser.p2.x, laser.p2.y)
+        d = math.dist(p1, p2)
+        d1 = math.dist(pos, p1)
+        d2 = math.dist(pos, p2)
+        if d1 < self.collisionRadius or d2 < self.collisionRadius:
+            return True
+        return d > d1 + d2 - self.collisionRadius / 4
     
     def draw(self):
         sprite = pg.transform.rotozoom(self.sprite, self.angle * 180 / math.pi, 0.2)
