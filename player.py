@@ -12,6 +12,7 @@ class PlayerShip(Ship):
         self.invincibleTime = 0
         self.lives = 3
         self.angle = 0
+        self.flySound.set_volume(0.1)
     
     def update(self, m = 1):
         self.vel.y += 0.5
@@ -29,6 +30,10 @@ class PlayerShip(Ship):
         if pg.key.get_pressed()[pg.K_SPACE] and self.pos.y > 50:
             self.vel.y = -5
             self.flyParticles(self.pos)
+            self.flySound.set_volume(0.2)
+        else:
+            self.flySound.set_volume(0.1)
+
     
     def activateShield(self):
         self.invincibleTime = 120

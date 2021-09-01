@@ -22,6 +22,9 @@ titleFont = pg.font.Font('font/CUFEL.otf', 50)
 timeJumpIcon = pg.image.load('sprites/timeJumpIcon1.png').convert_alpha()
 timeJumpIcon = pg.transform.rotozoom(timeJumpIcon, 0, 0.4)
 
+timeJumpSound = pg.mixer.Sound('sounds/timeJump.wav')
+timeJumpSound.set_volume(0.5)
+
 lifeIcon = pg.image.load('sprites/lifeIcon1.png').convert_alpha()
 lifeIcon = pg.transform.rotozoom(lifeIcon, 0, 0.4)
 

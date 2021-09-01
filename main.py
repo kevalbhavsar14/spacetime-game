@@ -17,7 +17,7 @@ gameIsRunning = False
 timeParticles = Emitter((0, 255, 0), 10, 5, 50)
 explosions = [Emitter((255, 255, 0), 30, 5, 50), Emitter((255, 0, 0), 30, 3, 30)]
 jumpTime = 1
-jumpCD = 2
+jumpCD = 0
 movementMul = 1
 groundX = 0
 
@@ -33,12 +33,15 @@ def main_loop():
         enemy.persue(player)
         enemy.update(movementMul)
         enemy.draw()
+        enemy.playSound(player.pos)
         if enemy.pos.y > 440 or enemy.pos.x < 0:
             explosions[0](enemy.pos)
+            # enemy.flySound.stop()
             enemies.remove(enemy)
         if player.collideShip(enemy) and player.invincibleTime <= 0:
             explosions[0](enemy.pos)
             explosions[0](player.pos)
+            # enemy.flySound.stop()
             enemies.remove(enemy)
             player.lives -= 1
             explosions[1]((30 + (player.lives) * 40, 30))
@@ -51,6 +54,7 @@ def main_loop():
             explosions[0](player.pos)
             player.lives -= 1
             explosions[1]((30 + (player.lives) * 40, 30))
+            player.explodeSound.play()
             player.activateShield()
         if laser.p1.x < 0 and laser.p2.x < 0:
             lasers.remove(laser)
@@ -61,6 +65,7 @@ def main_loop():
     
     if pg.key.get_pressed()[pg.K_q] and jumpCD <= 0 and player.lives > 0:
         jumpTime += 1
+        pg.mixer.pause()
         if jumpTime > 20: time_jump(jumpTime)
 
     if jumpCD > 0: jumpCD -= dt
@@ -71,6 +76,8 @@ def main_loop():
     if player.pos.y > 440:
         explosions[0](player.pos)
         player.lives = 0
+        pg.mixer.stop()
+        player.explodeSound.play()
         gameIsRunning = False
     
     timeParticles.update()
@@ -84,6 +91,8 @@ def main_loop():
 
 def time_jump(frames):
     global groundX, jumpTime, jumpCD
+    pg.mixer.unpause()
+    timeJumpSound.play()
     for i in range(frames):
         # player.update()
         for enemy in enemies:
@@ -173,10 +182,12 @@ def reset():
     score = 0
     movementMul = 1
     jumpTime = 1
-    jumpCD = 2
+    jumpCD = 0
     timeParticles.particles.clear()
     for explosion in explosions:
         explosion.particles.clear()
+    pg.mixer.stop()
+    player.flySound.play(-1)
 
 startTime = pg.time.get_ticks()
 while True:
@@ -191,4 +202,4 @@ while True:
         startScreen()
     draw_interface()
     pg.display.update()
-    pg.time.Clock().tick(80)
+    pg.time.Clock().tick(70)

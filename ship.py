@@ -14,6 +14,14 @@ class Ship:
         self.vel = pg.Vector2(vel)
         self.sprite = pg.image.load('sprites/ship.png').convert_alpha()
         self.particles = Emitter((255, 100, 0), 10, 1)
+        self.flySound = pg.mixer.Sound('sounds/rocket.wav')
+        self.flySound.set_volume(0)
+        self.flySound.play(-1)
+        self.explodeSound = pg.mixer.Sound('sounds/explosion.wav')
+    
+    def __del__(self):
+        self.explodeSound.play()
+        self.flySound.stop()
     
     def update(self, m = 1):
         maxVel = 15
@@ -54,6 +62,11 @@ class Ship:
         x = self.pos.x - sprite.get_width() / 2
         y = self.pos.y - sprite.get_height() / 2
         screen.blit(sprite, (x, y))
+    
+    def playSound(self, pos: pg.Vector2):
+        d = math.dist((self.pos.x, self.pos.y), (pos.x, pos.y))
+        self.flySound.set_volume(50/d)
+        # self.flySound.play()
 
 def spawnRandomShip():
     x = random.randint(width, width * 2)
